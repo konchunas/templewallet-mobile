@@ -94,5 +94,12 @@ export const MAINNET_TOKENS_METADATA: TokenMetadataInterface[] = [
     name: 'OroPocket Silver',
     symbol: 'XTZSilver',
     decimals: 6
+  },
+  {
+    id: 0,
+    address: 'KT1FfAmKCXegpJTxKP1Rz35irEpLA8s18QQJ',
+    name: 'Sapling',
+    symbol: 'SAP',
+    decimals: 8
   }
 ];

@@ -18,6 +18,8 @@ import { useSelectedAccountSelector, useTokensListSelector } from '../../store/w
 import { formatSize } from '../../styles/format-size';
 import { getTokenSlug } from '../../token/utils/token.utils';
 import { TokenInfo } from './token-info/token-info';
+import { SaplingNativeService } from "../../sapling/sapling-native.service"
+import { initializeSapling, saplingBuilder, JULIAN_VIEWING_KEY, JULIAN_SPENDING_KEY } from "../../sapling"
 
 export const TokenScreen = () => {
   const dispatch = useDispatch();
@@ -35,6 +37,28 @@ export const TokenScreen = () => {
     dispatch(loadTokenBalancesActions.submit(selectedAccount.publicKeyHash));
     dispatch(loadActivityGroupsActions.submit(selectedAccount.publicKeyHash));
   }, []);
+
+  useEffect(() => {
+    (async () => {
+      const saplingBuilder = await initializeSapling()
+      console.time("unshield")
+      const rawUnshield = await saplingBuilder.prepareUnshieldTransaction(
+        updatedToken.address,
+        JULIAN_VIEWING_KEY,
+        selectedAccount.publicKeyHash,
+        "7"
+      )
+      console.timeEnd("unshield")
+      console.log("signing unshield")
+      console.time("sign_unshield")
+
+      const signedUnshield = await saplingBuilder.signWithPrivateKey(
+        JULIAN_SPENDING_KEY,
+        rawUnshield
+      )
+      console.log(signedUnshield)
+    })()
+  }, [])
 
   useEffect(() => setSearchValue(token.address), [token]);
 

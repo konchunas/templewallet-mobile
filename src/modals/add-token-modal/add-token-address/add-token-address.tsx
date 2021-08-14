@@ -31,7 +31,8 @@ interface Props {
 
 const typeRadioButtons: RadioButton<TokenTypeEnum>[] = [
   { value: TokenTypeEnum.FA_1_2, label: 'FA 1.2' },
-  { value: TokenTypeEnum.FA_2, label: 'FA 2' }
+  { value: TokenTypeEnum.FA_2, label: 'FA 2' },
+  { value: TokenTypeEnum.SAPLING, label: 'SAPLING' }
 ];
 
 export const AddTokenAddress: FC<Props> = ({ onCloseButtonPress, onFormSubmitted }) => {
