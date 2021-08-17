@@ -7,10 +7,11 @@ import {
   TezosShieldedTezProtocolConfig,
   NetworkType,
   SaplingKeys
-} from "tezos-sapling-js"
-import { getOrFetchParameters } from "./params-downloader"
+} from "./dist" //TODO reaplce with "tezos-sapling-react-native"
 import { SaplingNativeService } from "./sapling-native.service"
 
+import { NativeModules } from "react-native"
+const { Sapling } = NativeModules;
 
 export {
   TezosSaplingAddress,
@@ -30,7 +31,9 @@ export const JULIAN_SPENDING_KEY = Buffer.from(
 export let saplingBuilder: TezosSaplingBuilder
 
 export async function initializeSapling() {
+  console.log("initializing sapling from index")
   const saplingNativeService = new SaplingNativeService()
+  console.log("creating external method provider")
   const saplingMethodProvider = await saplingNativeService.createExternalMethodProvider()
   const options = new TezosSaplingProtocolOptions(
     new TezosProtocolNetwork(
@@ -40,9 +43,13 @@ export async function initializeSapling() {
     ),
     new TezosShieldedTezProtocolConfig("Shielded contract", CONTRACT_ADDRESS, saplingMethodProvider)
   )
-
-  let addr = await TezosSaplingAddress.fromViewingKey(JULIAN_VIEWING_KEY)
-  console.log("julian address", addr)
+  console.log("getting julian address from", JULIAN_VIEWING_KEY)
+  // let addr = await TezosSaplingAddress.fromViewingKey(JULIAN_VIEWING_KEY)
+  const julian_key_bytes = Buffer.from(JULIAN_VIEWING_KEY, "hex")
+  console.log("julian key bytes", julian_key_bytes)
+  const paymentAddress: SaplingPaymentAddress =
+    await Sapling.getPaymentAddressFromViewingKey({ booba: true }, { goomba: 5 })
+  console.log("julian address", paymentAddress)
 
   saplingBuilder = new TezosSaplingBuilder(options)
   return saplingBuilder

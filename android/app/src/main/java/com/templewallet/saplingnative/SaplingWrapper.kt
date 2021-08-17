@@ -4,6 +4,8 @@ import com.facebook.react.bridge.ReactApplicationContext
 import com.facebook.react.bridge.ReactContextBaseJavaModule
 import com.facebook.react.bridge.ReactMethod
 import com.facebook.react.bridge.Promise
+import com.facebook.react.bridge.ReadableArray
+import com.facebook.react.bridge.ReadableMap
 import it.airgap.sapling.Sapling
 import android.util.Log;
 
@@ -17,6 +19,17 @@ fun String.isHex(): Boolean = matches(Regex("^(0x)?([0-9a-fA-F]{2})+$"))
 
 fun String.asByteArray(): ByteArray =
         if (isHex()) chunked(2).map { it.toInt(16).toByte() }.toByteArray() else toByteArray()
+
+
+fun ReadableMap.toByteArray(): ByteArray {
+   val buffer = this.getArray("data")!!
+   var ba = ByteArray(size = buffer.size())
+   for (i in 0..(buffer.size())) {
+      val el = buffer.getInt(i)
+      ba.set(i, el.toByte())
+   }
+   return ba
+}
 
 private val JULIAN_VIEWING_KEY =
         "0000000000000000004e836dac37234f08916ee886c8a6834816a0520b3d666bd4edf42130f826cae2379a26861252d22605e041b3ec6e19449a23863bce9ff20b78615a58446f7106f31f7a3d0efed751de9585116f73dbab76955d9b4d4378ed256792d57dce70e3cbbfaef401b0736255d060619f357c81c17074e1007d448bae942a19d33836da047bf52a95387da1b811a35b89eb3c8f46089208d5785445c01d382b9a153df9"
@@ -158,8 +171,14 @@ class SaplingWrapper internal constructor(context: ReactApplicationContext) : Re
     /******** Payment Address ********/
 
     @ReactMethod
-    public fun getPaymentAddressFromViewingKey(viewingKey: ByteArray, index: ByteArray?, promise: Promise) {
-        promise.resolve(sapling.getPaymentAddressFromViewingKey(viewingKey, index))
+    public fun getPaymentAddressFromViewingKey(viewingKey: ReadableMap, index: ReadableMap, promise: Promise) {
+       Log.d("getPaymentAddressFromViewingKey", viewingKey.toHashMap().toString())
+      //   val i = if (index.toHashMap().isEmpty()) null else index.toByteArray()
+      //   val vk = viewingKey.toByteArray()
+      //   Log.d("viewing key", vk.asHexString())
+      //   Log.d("index", i?.asHexString() ?: "None")
+      //   promise.resolve(sapling.getPaymentAddressFromViewingKey(vk, i))
+      promise.resolve(false)
     }
 
     @ReactMethod
